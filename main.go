@@ -19,8 +19,45 @@ import (
 
 func main() {
 	//	seedBlockChain()
-	info()
-	//	info1()
+	//info()
+	getAllTransactionIdsforEOA("0xc21736B0F5a03b348e1746F34806b46C39Ec1575")
+}
+
+func getAllTransactionIdsforEOA(accEoa string) []string {
+	// create connections to blockchain, and choose one of your EOA to check transactions
+	rpcURL1 := "http://127.0.0.1:49500"
+	client1, err := ethclient.Dial(rpcURL1)
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+
+	eoaAddress1 := common.HexToAddress(accEoa)
+
+	transactionIds := func(client *ethclient.Client, eoaAddress common.Address) []string {
+		header, err := client.HeaderByNumber(context.Background(), nil)
+		if err != nil {
+			log.Fatalf("Failed to get header: %v", err)
+		}
+		var transactionId []string
+		for i := big.NewInt(0); i.Cmp(header.Number) <= 0; i.Add(i, big.NewInt(1)) {
+			block, err := client.BlockByNumber(context.Background(), i)
+			if err != nil {
+				log.Fatalf("Failed to get block: %v", err)
+			}
+
+			for _, tx := range block.Transactions() {
+				//	transactionId = append(transactionId, tx.Hash().Hex())
+				if tx.To != nil && *tx.To() == eoaAddress {
+					transactionId = append(transactionId, tx.Hash().Hex())
+					fmt.Println(tx.To(), "<---->", tx.Hash().Hex())
+				}
+				//	fmt.Println(tx.To(), "<---->", tx.Hash().Hex())
+				//	fmt.Println(eoaAddress1, "<---->")
+			}
+		}
+		return transactionId
+	}
+	return transactionIds(client1, eoaAddress1)
 }
 
 func seedBlockChain() {
