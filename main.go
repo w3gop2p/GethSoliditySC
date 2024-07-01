@@ -46,13 +46,12 @@ func getAllTransactionIdsforEOA(accEoa string) []string {
 			}
 
 			for _, tx := range block.Transactions() {
-				//	transactionId = append(transactionId, tx.Hash().Hex())
-				if tx.To != nil && *tx.To() == eoaAddress {
+				transactionId = append(transactionId, tx.Hash().Hex())
+				/*	if tx.To != nil && *tx.To() == eoaAddress {
 					transactionId = append(transactionId, tx.Hash().Hex())
 					fmt.Println(tx.To(), "<---->", tx.Hash().Hex())
-				}
-				//	fmt.Println(tx.To(), "<---->", tx.Hash().Hex())
-				//	fmt.Println(eoaAddress1, "<---->")
+				}*/
+				fmt.Println(tx.To(), "<---->", tx.Hash().Hex())
 			}
 		}
 		return transactionId
